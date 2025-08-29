@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
             $table->string('nom'); // ex: Kitchen, Office_BM
             $table->timestamps();
+            $table->unique(['floor_id', 'nom']);
         });
     }
 
