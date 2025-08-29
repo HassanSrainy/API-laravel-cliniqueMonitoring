@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Floor;
 use App\Models\Clinique;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 
 class FloorController extends Controller
 {
