@@ -6,6 +6,7 @@ use App\Models\Floor;
 use App\Models\Clinique;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\QueryException;
 
 
 class FloorController extends Controller
