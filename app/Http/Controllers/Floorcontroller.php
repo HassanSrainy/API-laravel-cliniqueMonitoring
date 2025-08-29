@@ -23,21 +23,36 @@ class FloorController extends Controller
      * Créer un nouvel étage
      */
     public function store(Request $request)
-{
-    $floorsNames = ['Ground Floor', 'First Floor', 'Second Floor'];
+    {
+        $floorsNames = ['Ground Floor', 'First Floor', 'Second Floor'];
 
-    $validated = $request->validate([
-        'clinique_id' => 'required|exists:cliniques,id',
-        'nom' => ['required', 'string', 'max:255', Rule::in($floorsNames)],
-    ]);
+        $validated = $request->validate([
+            'clinique_id' => 'required|exists:cliniques,id',
+            'nom' => ['required', 'string', 'max:255', Rule::in($floorsNames)],
+        ]);
 
-    $floor = Floor::create($validated);
+        try {
+            $floor = Floor::create($validated);
 
-    return response()->json([
-        'message' => 'Étage créé avec succès',
-        'data' => $floor
-    ], 201);
-}
+            return response()->json([
+                'message' => 'Étage créé avec succès',
+                'data' => $floor
+            ], 201);
+
+        } catch (QueryException $e) {
+            // Vérifier si c’est une violation de clé unique
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'message' => "L'étage '{$validated['nom']}' existe déjà pour cette clinique."
+                ], 409); // 409 Conflict
+            }
+
+            // Pour toute autre erreur SQL
+            return response()->json([
+                'message' => 'Une erreur est survenue lors de la création de l’étage.'
+            ], 500);
+        }
+    }
 
     /**
      * Afficher un étage spécifique
