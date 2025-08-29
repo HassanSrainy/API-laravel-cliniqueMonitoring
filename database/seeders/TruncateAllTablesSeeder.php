@@ -22,7 +22,6 @@ class TruncateAllTablesSeeder extends Seeder
         DB::table('familles')->truncate();
         DB::table('types')->truncate();
         DB::table('users')->truncate();
-        DB::table('users')->truncate();
         DB::table('clinique_user')->truncate();
 
         // Réactiver les contraintes de clés étrangères
