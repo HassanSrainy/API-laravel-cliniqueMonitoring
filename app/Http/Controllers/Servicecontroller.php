@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class ServiceController extends Controller
 {
@@ -20,19 +21,35 @@ class ServiceController extends Controller
      * Créer un nouveau service
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'floor_id' => 'required|exists:floors,id',
-            'nom' => 'required|string|max:255',
-        ]);
+{
+    $validated = $request->validate([
+        'floor_id' => 'required|exists:floors,id',
+        'nom' => 'required|string|max:255',
+    ]);
 
+    try {
         $service = Service::create($validated);
 
         return response()->json([
             'message' => 'Service créé avec succès',
             'data' => $service
         ], 201);
+
+    } catch (QueryException $e) {
+        // Vérifier si c’est une violation de clé unique
+        if ($e->getCode() === '23000') {
+            return response()->json([
+                'message' => "Le service '{$validated['nom']}' existe déjà pour cet étage."
+            ], 409); // 409 Conflict
+        }
+
+        // Pour toute autre erreur SQL
+        return response()->json([
+            'message' => 'Une erreur est survenue lors de la création du service.'
+        ], 500);
     }
+}
+
 
     /**
      * Afficher un service spécifique
